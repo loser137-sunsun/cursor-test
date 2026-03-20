@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Survival Analysis Simulation</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --secondary: #e11d48;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.04);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,.10), 0 8px 32px rgba(0,0,0,.06);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+    color: #fff;
+    padding: 2rem 2rem 1.75rem;
+    text-align: center;
+  }
+  header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -.02em; }
+  header p  { font-size: .95rem; opacity: .85; margin-top: .35rem; }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 1.75rem;
+    align-items: start;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+  }
+
+  .panel-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    color: var(--text);
+  }
+  .panel-title .icon {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .75rem;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .form-group { margin-bottom: 1rem; }
+  .form-group:last-of-type { margin-bottom: 0; }
+  label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: .3rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: .55rem .75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: .95rem;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color .15s, box-shadow .15s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+  }
+
+  .btn-run {
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: .7rem 1rem;
+    font-size: .95rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .1s, box-shadow .15s;
+    box-shadow: var(--shadow);
+  }
+  .btn-run:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+  .btn-run:active { transform: translateY(0); }
+
+  .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .chart-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+  .chart-wrapper canvas { width: 100% !important; height: 100% !important; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+  .stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.15rem;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: .25rem;
+  }
+  .stat-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-value.significant { color: var(--secondary); }
+
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+  }
+  .summary-table th, .summary-table td {
+    padding: .55rem .75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-table th {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    background: var(--bg);
+  }
+  .summary-table tbody tr:last-child td { border-bottom: none; }
+  .dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: .45rem;
+    vertical-align: middle;
+  }
+  .dot.control { background: var(--primary); }
+  .dot.treatment { background: var(--secondary); }
+
+  .placeholder-msg {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 4rem 1rem;
+    font-size: .95rem;
+  }
+
+  @media (max-width: 860px) {
+    .container { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Survival Analysis Simulation</h1>
+  <p>Two-arm exponential survival model with Kaplan-Meier estimation</p>
+</header>
+
+<div class="container">
+  <!-- Left panel: Parameters -->
+  <div class="panel" id="param-panel">
+    <div class="panel-title">
+      <span class="icon" style="background:var(--primary);">P</span>
+      Simulation Parameters
+    </div>
+
+    <div class="form-group">
+      <label for="nControl">Sample Size &mdash; Control</label>
+      <input type="number" id="nControl" value="100" min="10" step="10">
+    </div>
+    <div class="form-group">
+      <label for="nTreatment">Sample Size &mdash; Treatment</label>
+      <input type="number" id="nTreatment" value="100" min="10" step="10">
+    </div>
+    <div class="form-group">
+      <label for="medianControl">Control Median Survival (months)</label>
+      <input type="number" id="medianControl" value="12" min="1" step="1">
+    </div>
+    <div class="form-group">
+      <label for="hr">Hazard Ratio (Treatment / Control)</label>
+      <input type="number" id="hr" value="0.7" min="0.01" max="5" step="0.05">
+    </div>
+    <div class="form-group">
+      <label for="accrualPeriod">Enrollment Period (months)</label>
+      <input type="number" id="accrualPeriod" value="12" min="1" step="1">
+    </div>
+    <div class="form-group">
+      <label for="minFollowup">Minimum Follow-up (months)</label>
+      <input type="number" id="minFollowup" value="12" min="1" step="1">
+    </div>
+
+    <button class="btn-run" id="btnRun">Run Simulation</button>
+  </div>
+
+  <!-- Right column -->
+  <div class="right-col">
+    <!-- Chart -->
+    <div class="panel">
+      <div class="panel-title">
+        <span class="icon" style="background:#7c3aed;">K</span>
+        Kaplan-Meier Survival Curves
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="kmChart"></canvas>
+      </div>
+      <div id="chartPlaceholder" class="placeholder-msg">
+        Set parameters and press <strong>Run Simulation</strong> to generate curves.
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="panel" id="statsPanel" style="display:none;">
+      <div class="panel-title">
+        <span class="icon" style="background:#059669;">S</span>
+        Statistical Results
+      </div>
+
+      <div class="stats-grid" id="statsGrid"></div>
+
+      <div style="margin-top:1.25rem;">
+        <div class="panel-title" style="font-size:.9rem;">Group Summary</div>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>Group</th>
+              <th>N</th>
+              <th>Events</th>
+              <th>Censored</th>
+              <th>Median Surv.</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// --------------- Random number helpers ---------------
+function randUniform() {
+  return Math.random();
+}
+
+function randExponential(lambda) {
+  return -Math.log(1 - randUniform()) / lambda;
+}
+
+// --------------- Simulation ---------------
+function simulate(params) {
+  const { nControl, nTreatment, medianControl, hr, accrualPeriod, minFollowup } = params;
+
+  const lambdaControl = Math.LN2 / medianControl;
+  const lambdaTreatment = lambdaControl * hr;
+
+  const totalStudyDuration = accrualPeriod + minFollowup;
+
+  function generateGroup(n, lambda) {
+    const subjects = [];
+    for (let i = 0; i < n; i++) {
+      const enrollTime = randUniform() * accrualPeriod;
+      const trueSurv = randExponential(lambda);
+      const maxObserved = totalStudyDuration - enrollTime;
+      const event = trueSurv <= maxObserved ? 1 : 0;
+      const time = event ? trueSurv : maxObserved;
+      subjects.push({ time, event });
+    }
+    return subjects;
+  }
+
+  const control = generateGroup(nControl, lambdaControl);
+  const treatment = generateGroup(nTreatment, lambdaTreatment);
+  return { control, treatment };
+}
+
+// --------------- Kaplan-Meier estimator ---------------
+function kaplanMeier(subjects) {
+  const sorted = subjects.slice().sort((a, b) => a.time - b.time);
+  const n = sorted.length;
+  let atRisk = n;
+  const curve = [{ time: 0, survival: 1.0 }];
+  let survival = 1.0;
+
+  let i = 0;
+  while (i < n) {
+    const t = sorted[i].time;
+    let events = 0;
+    let censored = 0;
+    while (i < n && sorted[i].time === t) {
+      if (sorted[i].event) events++;
+      else censored++;
+      i++;
+    }
+    if (events > 0) {
+      survival *= (atRisk - events) / atRisk;
+      curve.push({ time: t, survival });
+    }
+    atRisk -= (events + censored);
+  }
+  return curve;
+}
+
+function medianFromKM(curve) {
+  for (let i = 1; i < curve.length; i++) {
+    if (curve[i].survival <= 0.5) {
+      return curve[i].time;
+    }
+  }
+  return NaN;
+}
+
+// --------------- Log-rank test ---------------
+function logRankTest(control, treatment) {
+  const allSubjects = [
+    ...control.map(s => ({ ...s, group: 0 })),
+    ...treatment.map(s => ({ ...s, group: 1 }))
+  ].sort((a, b) => a.time - b.time);
+
+  const eventTimes = [...new Set(
+    allSubjects.filter(s => s.event).map(s => s.time)
+  )].sort((a, b) => a - b);
+
+  let O1 = 0, E1 = 0, V = 0;
+  let n0 = control.length, n1 = treatment.length;
+
+  let idx = 0;
+  for (const t of eventTimes) {
+    while (idx < allSubjects.length && allSubjects[idx].time < t) {
+      idx++;
+    }
+
+    let d0 = 0, d1 = 0, c0 = 0, c1 = 0;
+    let j = idx;
+    while (j < allSubjects.length && allSubjects[j].time === t) {
+      const s = allSubjects[j];
+      if (s.group === 0) {
+        if (s.event) d0++; else c0++;
+      } else {
+        if (s.event) d1++; else c1++;
+      }
+      j++;
+    }
+
+    const d = d0 + d1;
+    const n = n0 + n1;
+
+    if (n > 0) {
+      const e1 = (n1 / n) * d;
+      O1 += d1;
+      E1 += e1;
+      if (n > 1) {
+        V += (d * n0 * n1 * (n - d)) / (n * n * (n - 1));
+      }
+    }
+
+    n0 -= (d0 + c0);
+    n1 -= (d1 + c1);
+    idx = j;
+  }
+
+  const chi2 = V > 0 ? ((O1 - E1) * (O1 - E1)) / V : 0;
+  const pValue = V > 0 ? 1 - jStat.chisquare.cdf(chi2, 1) : 1;
+  const hrEstimate = E1 > 0 ? O1 / E1 : NaN;
+
+  return { chi2, pValue, hrEstimate, O1, E1, V };
+}
+
+// --------------- Chart rendering ---------------
+let chartInstance = null;
+
+function buildStepData(curve, maxTime) {
+  const data = [];
+  for (let i = 0; i < curve.length; i++) {
+    const pt = curve[i];
+    if (i < curve.length - 1) {
+      data.push({ x: pt.time, y: pt.survival });
+      data.push({ x: curve[i + 1].time, y: pt.survival });
+    } else {
+      data.push({ x: pt.time, y: pt.survival });
+      data.push({ x: maxTime, y: pt.survival });
+    }
+  }
+  return data;
+}
+
+function renderChart(controlCurve, treatmentCurve, maxTime) {
+  const canvas = document.getElementById("kmChart");
+  const placeholder = document.getElementById("chartPlaceholder");
+  placeholder.style.display = "none";
+  canvas.style.display = "block";
+
+  if (chartInstance) chartInstance.destroy();
+
+  const ctrlData = buildStepData(controlCurve, maxTime);
+  const trtData = buildStepData(treatmentCurve, maxTime);
+
+  chartInstance = new Chart(canvas, {
+    type: "scatter",
+    data: {
+      datasets: [
+        {
+          label: "Control",
+          data: ctrlData,
+          showLine: true,
+          borderColor: "rgba(37,99,235,.9)",
+          backgroundColor: "rgba(37,99,235,.08)",
+          fill: true,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          tension: 0
+        },
+        {
+          label: "Treatment",
+          data: trtData,
+          showLine: true,
+          borderColor: "rgba(225,29,72,.9)",
+          backgroundColor: "rgba(225,29,72,.08)",
+          fill: true,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      interaction: { mode: "nearest", intersect: false },
+      plugins: {
+        legend: {
+          position: "top",
+          labels: {
+            usePointStyle: true,
+            pointStyle: "line",
+            padding: 20,
+            font: { size: 13, weight: "600" }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              return `${ctx.dataset.label}: S(${ctx.parsed.x.toFixed(1)}) = ${ctx.parsed.y.toFixed(3)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: "linear",
+          title: { display: true, text: "Time (months)", font: { size: 13, weight: "600" } },
+          min: 0,
+          grid: { color: "rgba(0,0,0,.06)" },
+          ticks: { font: { size: 12 } }
+        },
+        y: {
+          title: { display: true, text: "Survival Probability", font: { size: 13, weight: "600" } },
+          min: 0,
+          max: 1.02,
+          grid: { color: "rgba(0,0,0,.06)" },
+          ticks: { font: { size: 12 }, callback: v => v.toFixed(1) }
+        }
+      }
+    }
+  });
+}
+
+// --------------- Stats display ---------------
+function renderStats(logrank, controlData, treatmentData, controlCurve, treatmentCurve) {
+  const panel = document.getElementById("statsPanel");
+  panel.style.display = "";
+
+  const controlEvents = controlData.filter(s => s.event).length;
+  const treatmentEvents = treatmentData.filter(s => s.event).length;
+  const medCtrl = medianFromKM(controlCurve);
+  const medTrt = medianFromKM(treatmentCurve);
+
+  const grid = document.getElementById("statsGrid");
+  const isSig = logrank.pValue < 0.05;
+
+  grid.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Log-rank p-value</div>
+      <div class="stat-value ${isSig ? "significant" : ""}">${logrank.pValue < 0.001 ? "< 0.001" : logrank.pValue.toFixed(4)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Estimated HR</div>
+      <div class="stat-value">${isNaN(logrank.hrEstimate) ? "N/A" : logrank.hrEstimate.toFixed(3)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Chi-square statistic</div>
+      <div class="stat-value">${logrank.chi2.toFixed(3)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Events</div>
+      <div class="stat-value">${controlEvents + treatmentEvents}</div>
+    </div>
+  `;
+
+  const body = document.getElementById("summaryBody");
+  body.innerHTML = `
+    <tr>
+      <td><span class="dot control"></span>Control</td>
+      <td>${controlData.length}</td>
+      <td>${controlEvents}</td>
+      <td>${controlData.length - controlEvents}</td>
+      <td>${isNaN(medCtrl) ? "Not reached" : medCtrl.toFixed(1) + " mo"}</td>
+    </tr>
+    <tr>
+      <td><span class="dot treatment"></span>Treatment</td>
+      <td>${treatmentData.length}</td>
+      <td>${treatmentEvents}</td>
+      <td>${treatmentData.length - treatmentEvents}</td>
+      <td>${isNaN(medTrt) ? "Not reached" : medTrt.toFixed(1) + " mo"}</td>
+    </tr>
+  `;
+}
+
+// --------------- Main ---------------
+document.getElementById("btnRun").addEventListener("click", () => {
+  const params = {
+    nControl: parseInt(document.getElementById("nControl").value, 10),
+    nTreatment: parseInt(document.getElementById("nTreatment").value, 10),
+    medianControl: parseFloat(document.getElementById("medianControl").value),
+    hr: parseFloat(document.getElementById("hr").value),
+    accrualPeriod: parseFloat(document.getElementById("accrualPeriod").value),
+    minFollowup: parseFloat(document.getElementById("minFollowup").value)
+  };
+
+  if (Object.values(params).some(v => isNaN(v) || v <= 0)) {
+    alert("All parameters must be positive numbers.");
+    return;
+  }
+
+  const { control, treatment } = simulate(params);
+  const controlCurve = kaplanMeier(control);
+  const treatmentCurve = kaplanMeier(treatment);
+
+  const maxTime = params.accrualPeriod + params.minFollowup;
+  renderChart(controlCurve, treatmentCurve, maxTime);
+
+  const logrank = logRankTest(control, treatment);
+  renderStats(logrank, control, treatment, controlCurve, treatmentCurve);
+});
+</script>
+</body>
+</html>
