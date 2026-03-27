@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ICH E9(R1) エスティマンド論争 — Fleming et al. と2つのコメンタリー</title>
+  <meta name="description" content="臨床試験の併発事象戦略（治療方針・仮想的・主層・治療中）に関するFleming et al. (2025) と Morris et al. (2026)、Keene et al. (2026) の議論の詳細まとめ。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f2ee;
+      --bg-elevated: #fffcf7;
+      --text: #1a1814;
+      --text-muted: #5c574d;
+      --accent: #0d5c4a;
+      --accent-soft: rgba(13, 92, 74, 0.12);
+      --border: #dcd6cb;
+      --warn: #8b4513;
+      --link: #0b4f6c;
+      --shadow: 0 12px 40px rgba(26, 24, 20, 0.08);
+      --radius: 14px;
+      --font: "IBM Plex Sans JP", system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+    [data-theme="dark"] {
+      --bg: #121410;
+      --bg-elevated: #1c1b17;
+      --text: #ece8df;
+      --text-muted: #a39a8c;
+      --accent: #5ec4a4;
+      --accent-soft: rgba(94, 196, 164, 0.15);
+      --border: #35332c;
+      --warn: #e8a87c;
+      --link: #7ec8e3;
+      --shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--text);
+      background: var(--bg);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+    .wrap {
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 0 1.25rem 4rem;
+    }
+    header.hero {
+      position: relative;
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    header.hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 100% 0%, var(--accent-soft), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 0% 100%, rgba(11, 79, 108, 0.08), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    [data-theme="dark"] header.hero::before {
+      background:
+        radial-gradient(ellipse 80% 60% at 100% 0%, var(--accent-soft), transparent 55%),
+        radial-gradient(ellipse 60% 50% at 0% 100%, rgba(126, 200, 227, 0.06), transparent 50%);
+    }
+    .hero-inner { position: relative; z-index: 1; }
+    h1 {
+      font-size: clamp(1.65rem, 4vw, 2.35rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin: 0 0 0.75rem;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 40rem;
+      margin: 0 0 1.5rem;
+    }
+    .meta-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .badge {
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--border);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1.75rem 0 0;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border);
+    }
+    button.theme-toggle {
+      font-family: var(--font);
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, border-color 0.2s;
+    }
+    button.theme-toggle:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .toc {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow);
+    }
+    .toc h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .toc ul { margin: 0; padding-left: 1.2rem; }
+    .toc li { margin: 0.35rem 0; }
+    .toc a {
+      color: var(--link);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .toc a:hover { border-bottom-color: var(--link); }
+    section {
+      margin-bottom: 2.75rem;
+      scroll-margin-top: 5.5rem;
+    }
+    h2.section-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin: 0 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 1.75rem 0 0.65rem;
+      color: var(--text);
+    }
+    p { margin: 0 0 1rem; }
+    ul, ol { margin: 0 0 1rem; padding-left: 1.35rem; }
+    li { margin: 0.35rem 0; }
+    strong { font-weight: 600; }
+    .callout {
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.15rem;
+      margin: 1.25rem 0;
+      background: var(--accent-soft);
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .callout.warn {
+      border-left-color: var(--warn);
+      background: rgba(139, 69, 19, 0.08);
+    }
+    [data-theme="dark"] .callout.warn {
+      background: rgba(232, 168, 124, 0.1);
+    }
+    table.compare {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin: 1.25rem 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    table.compare th,
+    table.compare td {
+      padding: 0.75rem 0.85rem;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+    table.compare th {
+      background: var(--bg-elevated);
+      font-weight: 600;
+    }
+    table.compare tr:last-child td { border-bottom: none; }
+    details.card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 0.75rem 0;
+      background: var(--bg-elevated);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    details.card summary {
+      cursor: pointer;
+      padding: 1rem 1.15rem;
+      font-weight: 600;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    details.card summary::-webkit-details-marker { display: none; }
+    details.card summary::after {
+      content: "＋";
+      font-size: 1.1rem;
+      color: var(--accent);
+      transition: transform 0.2s;
+    }
+    details.card[open] summary::after { transform: rotate(45deg); }
+    details.card .inner {
+      padding: 0 1.15rem 1.15rem;
+      border-top: 1px dashed var(--border);
+    }
+    .paper-tag {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    nav.sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      margin: 0 -1.25rem 2rem;
+      padding: 0.65rem 1.25rem;
+    }
+    .sticky-inner {
+      max-width: 52rem;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sticky-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.75rem;
+      font-size: 0.82rem;
+    }
+    .sticky-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid transparent;
+    }
+    .sticky-links a:hover {
+      color: var(--link);
+      border-bottom-color: var(--link);
+    }
+    .refs {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .refs dt { font-weight: 600; color: var(--text); margin-top: 0.75rem; }
+    .refs dd { margin: 0.25rem 0 0 0; }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    @media print {
+      .sticky-nav, .toolbar, button.theme-toggle { display: none; }
+      body { background: #fff; color: #000; }
+      details.card { break-inside: avoid; }
+    }
+    .view-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0 1.25rem;
+    }
+    .view-tabs button {
+      font-family: var(--font);
+      font-size: 0.88rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .view-tabs button[aria-selected="true"] {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    [data-theme="dark"] .view-tabs button[aria-selected="true"] {
+      color: #0d1f18;
+    }
+    .panel { display: none; }
+    .panel.active { display: block; animation: fade 0.35s ease; }
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    code { font-family: var(--mono); font-size: 0.88em; }
+  </style>
+</head>
+<body>
+  <nav class="sticky-nav" aria-label="ページ内ナビゲーション">
+    <div class="sticky-inner">
+      <span class="paper-tag" style="border:none;background:transparent;padding:0;color:var(--text-muted);">スクロール追従</span>
+      <div class="sticky-links">
+        <a href="#context">背景</a>
+        <a href="#fleming">Fleming</a>
+        <a href="#morris">Morris</a>
+        <a href="#keene">Keene</a>
+        <a href="#matrix">対照表</a>
+        <a href="#synthesis">整理</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <header class="hero">
+      <div class="hero-inner">
+        <h1>ICH E9(R1) 併発事象戦略をめぐる学術的議論</h1>
+        <p class="subtitle">
+          Fleming et al.（2025）の主張と、それに応じた Morris et al.（2026）、Keene et al.（2026）の2本のコメンタリーを横断し、
+          「治療方針」「仮想的」「主層」「治療中」各戦略の位置づけ、因果推論・ランダム化の解釈・実務的含意までを日本語で詳述します。
+        </p>
+        <div class="meta-badges">
+          <span class="badge">Statistics in Medicine</span>
+          <span class="badge">Estimand / ICE</span>
+          <span class="badge">Causal inference</span>
+        </div>
+        <div class="toolbar">
+          <p style="margin:0;font-size:0.9rem;color:var(--text-muted);">表示：ライト / ダークを切り替え可能（設定はブラウザに保存）</p>
+          <button type="button" class="theme-toggle" id="themeBtn" aria-pressed="false">テーマを切り替え</button>
+        </div>
+      </div>
+    </header>
+
+    <aside class="toc" aria-labelledby="toc-heading">
+      <h2 id="toc-heading">目次</h2>
+      <ul>
+        <li><a href="#context">1. 論争の舞台設定（ICH E9(R1) と併発事象）</a></li>
+        <li><a href="#fleming">2. Fleming et al.（2025）— 主張の骨格と各戦略への批判</a></li>
+        <li><a href="#morris">3. Morris et al.（2026）— 因果推論の道筋と「具体化可能性」</a></li>
+        <li><a href="#keene">4. Keene et al.（2026）— 割付効果・推定・ランダム化・実世界関連性</a></li>
+        <li><a href="#matrix">5. 三者比較（論点マトリクス）</a></li>
+        <li><a href="#interactive">6. インタラクティブ：論点ビューの切り替え</a></li>
+        <li><a href="#synthesis">7. 総合整理と実務的含意</a></li>
+        <li><a href="#refs">参考文献（原著）</a></li>
+      </ul>
+    </aside>
+
+    <section id="context">
+      <h2 class="section-title">1. 論争の舞台設定</h2>
+      <p>
+        ICH E9(R1) は、欠損データの扱いと試験目的の明確化を結びつける文脈から、<strong>エスティマンド（推定対象）</strong>と
+        <strong>併発事象（intercurrent events, ICE）</strong>の取り扱いを体系化した。併発事象には、治療中止、レスキュー薬、スイッチ、死亡などがあり、
+        ガイダンスは「治療方針（treatment policy）」「仮想的（hypothetical）」「複合（composite）」「治療中（while on treatment）」「主層（principal stratum）」
+        などの戦略を提示する。
+      </p>
+      <p>
+        Fleming et al. は、Addendum の影響で<strong>主要解析</strong>に仮想的・主層・治療中戦略が多用されるようになったことに警鐘を鳴らし、
+        多くの場合は<strong>標準治療対照</strong>と<strong>治療方針戦略</strong>（必要なら死亡などは<strong>複合</strong>）が、ランダム化の保全と臨床的に意味のある因果推論に適すると主張する。
+        これに対し Morris et al. と Keene et al. は、<strong>一律の処方箋</strong>ではなく文脈に応じたエスティマンド選定と、
+        因果推論の方法論を含む<strong>より多様な解析</strong>の正当性を擁護する。
+      </p>
+    </section>
+
+    <section id="fleming">
+      <h2 class="section-title">2. Fleming et al.（2025）</h2>
+      <p>
+        タイトルは「ICH E9(R1) Addendum の併発事象戦略の適切な実装に関する展望」。著者はコンサル、データモニタリング、規制、査読の現場経験を背景に、
+        <strong>主要および多重性管理下の副次エンドポイント</strong>に焦点を当てる。
+      </p>
+
+      <h3>2.1 問題意識</h3>
+      <p>
+        多くの試験で、仮想的・主層・治療中の戦略が<strong>ランダム化後の情報を用いて参加者を解析から事実上除外</strong>する形で実装され、
+        ランダム化の整合性が損なわれる。結果として観察された群間差が<strong>交絡</strong>によるものか治療効果かの区別が難しく、
+        処方者・患者を誤導するリスクがある、とする。表1では、実際のプロトコル記述から仮想的・主層・治療中の例文が引用されている。
+      </p>
+
+      <h3>2.2 科学的に厳密な因果推論を支える「6要素」（表2の要約）</h3>
+      <ol>
+        <li>実験群と対照群の間の<strong>ランダム化</strong>（可能なら二重盲検、介入開始に近い時点で実施）。</li>
+        <li><strong>標準治療対照</strong>：地域の標準治療に近い対照群。プラセボのみで確立療法を「レスキューまで保留」するデザインは、併発事象を増やし解析を難しくし、実臨床の意思決定との関連も弱めうる、と論じる。</li>
+        <li>参加者の<strong>感じる・機能・生存（feels, functions, survives）</strong>を直接測る主要エンドポイント、または適切な代替。</li>
+        <li>治療中止・レスキュー後も、死亡または正当な同意撤回まで<strong>フルフォロー</strong>。</li>
+        <li>ITT に基づく主要解析＝併発事象に対して<strong>治療方針戦略</strong>。死亡などは<strong>複合戦略</strong>で主要エンドポイントに組み込みうる。ランダム化後アウトカムで参加者を除外しない。</li>
+        <li><strong>感度解析</strong>：欠損のメカニズムについて広い仮定のスペクトラムを検討。</li>
+      </ol>
+
+      <h3>2.3 戦略別の批判的考察（要約）</h3>
+      <details class="card">
+        <summary>治療中（while on treatment）戦略</summary>
+        <div class="inner">
+          <p>
+            中止後の測定は、キャリーオーバー、疾病経路への影響、支援ケアの利用可能性などを通じて依然<strong>臨床的に関連</strong>しうる。
+            中止やレスキューは介入の影響を強く受け、打ち切りで<strong>情報的有意な欠損</strong>を誘発しバイアスしうる。
+            EXSCEL 試験の例では、中止後30日の MACE リスクが高く、群間で中止理由の構造が異なりうることが示唆される。
+            「治療中」や症状のみの「生存中」解析は、脆弱なサブグループへの有害効果を捉え損ね、誤解を招きうる、とする。
+          </p>
+        </div>
+      </details>
+      <details class="card">
+        <summary>仮想的（hypothetical）戦略</summary>
+        <div class="inner">
+          <p>
+            倫理的に追加治療が必要な状況で「その治療がない世界」の効果を推定することの関連性に疑義。
+            反事実的シナリオへの推定は<strong>強く検証不能な仮定</strong>に依存しがち。MMRM や比例ハザードなど単純な打ち切り・欠損機構の仮定は現実と乖離しうる。
+            IgA腎症試験で SGLT2 開始時に打ち切る仮想的実装は、群間差のある選択的開始でバイアスしうる、と警鐘。
+            設計の代替として、特定の併用療法が主エンドポイント評価前に稀な地域・施設で試験する、など<strong>ITT で臨床問いに答える</strong>道も提案（LMIC での実施には分配的正義の条件付き）。
+          </p>
+        </div>
+      </details>
+      <details class="card">
+        <summary>主層（principal stratum）戦略</summary>
+        <div class="inner">
+          <p>
+            潜在アウトカムに基づく主層は<strong>完全には識別できず</strong>、強い仮定とバイアスリスク。実装が「事後サブグループ」に落ちると improper subgroup となり、
+            腫瘍応答後のサブセット解析のように非ランダム化比較の問題が生じうる。ワクチン例では、ITT で感染リスクと重症化を別々に評価する方が解釈しやすい、とも述べる。
+          </p>
+        </div>
+      </details>
+      <details class="card">
+        <summary>複合（composite）戦略</summary>
+        <div class="inner">
+          <p>
+            死亡を含む複合（イベントフリー生存など）は ITT と臨床的相关性を高めうる。一方、<strong>治療中止そのものを複合イベントに含める</strong>ことは、
+            中止後も利益が続く場合の臨床的意味を損ない、遵守の差が効果に見せかけるリスクがある、と慎重論を展開。成分別の補助解析の重要性にも触れる。
+          </p>
+        </div>
+      </details>
+
+      <h3>2.4 その他の推奨</h3>
+      <p>
+        非劣性試験でも ITT・品質基準の重要性を強調。欠損は<strong>予防が最優先</strong>；欠損があれば観測されうるアウトカムへの「最良の予測」を中心とした仮定と不確実性の表現を推奨。
+        オンコロジーでの進行時クロスイン設計など、デザインが本質的問いを損なう例（PI3K 阻害薬と OS の議論）にも言及する。
+      </p>
+    </section>
+
+    <section id="morris">
+      <h2 class="section-title">3. Morris et al.（2026）</h2>
+      <p>
+        タイトルは Fleming et al. へのコメントとして「Appropriate Implementation…」に因果的視点を付与するもの。
+        PSI–EFSPI 因果推論特別関心グループの共同リードが執筆。Fleming et al. の「結論」には多く同意しつつ、<strong>治療方針へのほぼ一律の処方</strong>を強く批判する。
+      </p>
+
+      <h3>3.1 「厳密な因果推論」はルールではなく推論の連鎖</h3>
+      <p>
+        図1のように、<strong>臨床推論</strong>→エスティマンド（潜在アウトカムの関数）→<strong>因果推論</strong>（識別式）→<strong>統計推論</strong>（推定量・欠損処理）→ソフトウェア、
+        と各段階で見直し（曲矢印）がありうる、というプロセスを提示。ICH と因果推論コミュニティは<strong>ケースバイケース</strong>のエスティマンド記述を奨励する、と対比する。
+      </p>
+
+      <h3>3.2 主要な批判（7点の要約）</h3>
+      <ul>
+        <li>推定が容易なエスティマンド（治療方針・複合）を優先しすぎると、<strong>最も関心が高い問い</strong>と乖離しうる。</li>
+        <li>「6要素」と併発事象戦略の関係が本文で十分に結びついていない。</li>
+        <li><strong>バイアス</strong>は推定量とエスティマンドの組に対して定義されるべきで、Fleming et al. の「真の治療効果」などの表現は曖昧になりうる。</li>
+        <li><strong>エスティマンドと推定手続きの混同</strong>：仮定の問題は識別・推定に帰属し、エスティマンドそのものの「バイアス」とは別。</li>
+        <li>仮想的戦略について、単純な打ち切り批判に留まり、g-推定、二重頑健、機械学習併用、IV など<strong>発展した手法</strong>を軽視している。</li>
+        <li>治療方針でも<strong>欠損下の推定の難しさ</strong>への言及が薄い。</li>
+        <li>仮想的問いのために LMIC で試験する提案は、移植の有無などで母集団属性が変わり、<strong>搾取の懸念</strong>・脆弱人口の研究史と結びつきうる、と倫理的に強く問題提起。</li>
+      </ul>
+
+      <h3>3.3 「具体化可能性（tangibility）」— Morris らの実務基準</h3>
+      <p>
+        Fleming et al. と最も一致する点の一つとして、将来の診療でそのエスティマンドの効果が<strong>どう実現されるか</strong>を問う基準を明示する。
+        仮想的：併発事象を将来どう防ぐのか。主層：層の同定が処方前に可能か。治療方針：試験内の併発事象分布が将来も安定するか（効果が大きいと遵守が変わる、レスキュー薬が廃れる、等）。
+        これは純粋に実務的なフィルタとして、臨床推論の段階で早期に適用できる、とする。
+      </p>
+
+      <h3>3.4 歴史的例：AIDS 試験と Robins の方法</h3>
+      <p>
+        ACTG 002：ITT（治療方針）では低用量 AZT の生存が有利に見えたが、プロフィラキシスの使用が群間で不均一。将来はプロフィラキシスが標準となるなら、
+        <strong>仮想的・制御直接効果</strong>に近い問いの方が臨床的に適切だった、g-推定と DAG で説明。
+        ACTG 021：ITT ではバクトリムの生存優位が検出されなかったが、非遵守・スイッチを考慮した IPCW 等で仮想的エスティマンドに近い推定が公共衛生上重要だった、と歴史を引用する。
+      </p>
+
+      <h3>3.5 標準治療対照・ITT・複合への注釈</h3>
+      <p>
+        「標準治療」が施設間で曖昧な領域（例：小児肺炎のアモキシシリン用量）、SUTVA の問題、ガイダンスがプラセボを容認する疾患領域、肥満試験でプラセボ群が承認薬を服用しうる等、
+        治療方針が比較群を損なう例を挙げる。フルフォローしても、仮想的・複合に必要な<strong>反事実に関わる欠損</strong>は残る。死亡で打ち切られるアウトカムでは治療方針も未定義になりうる、など。
+      </p>
+    </section>
+
+    <section id="keene">
+      <h2 class="section-title">4. Keene et al.（2026）</h2>
+      <p>
+        製薬バイオメトリクス関係者（EIWG 関連）によるコメンタリー。Fleming et al. の標準治療対照など設計上の示唆を評価しつつ、
+        <strong>治療方針が介入の因果効果を一意に捉える</strong>という印象を是正することに力点がある。
+      </p>
+
+      <h3>4.1 割付効果と「介入を受けた効果」</h3>
+      <p>
+        治療方針戦略は典型的に<strong>ベースラインでの割付の因果効果（ITT 効果）</strong>を評価し、プロトコル通り<strong>介入を摂取し続けた効果（per-protocol に対応しうる問い）</strong>とは別。
+        無効のため中止し別治療で改善したアウトカムが、当初割付に帰属する、という解釈上のニュアンスを強調する。
+        while on treatment・仮想的・主層は、遵守・反事実に関わる<strong>別の因果問い</strong>に対応しうる（Drury et al. 等）。
+      </p>
+
+      <h3>4.2 推定と仮定：治療方針も「楽ではない」</h3>
+      <p>
+        欠損下では治療方針の推定も<strong>強い検証不能仮定</strong>に依存しうる。Bell et al. のレビュー：エスティマンドの記述は容易だが<strong>信頼できる推定は難しい</strong>。
+        「観測できていれば最良の予測」は、中止後に多様な代替介入がありうる場合、反事実の特定がより難しい、と論じる。
+        連続量の複合では失敗値の数値がエスティマンド定義の一部となり分散拡大を招きうる、と統計的側面に触れる。
+      </p>
+
+      <h3>4.3 「ランダム化の整合性」概念の再検討</h3>
+      <p>
+        規制上、主要解析に全ランダム化参加者を含めることには同意するが、含める<strong>データの範囲</strong>は臨床問いに合わせうる。
+        「全参加者の全データ」を整合性とするなら、治療方針も併発事象という情報を本質的に「除外」しうる、という逆説を提示。
+        Fleming が挙げた「介入が併発事象発生にのみ有害」なシナリオでは、併発事象の群間比較で誤解を避けられる、とも指摘。
+      </p>
+
+      <h3>4.4 実世界関連性と複合戦略の拡張</h3>
+      <p>
+        試験内の併発事象が実臨床と一致するとは限らず、後続治療が標準化されていない場合、「治療方針」という語が<strong>再現可能な政策</strong>を示すとは限らない。
+        一方、レスキューなしの世界の効果を問う仮想的は、薬剤の効力プロファイル理解に有用で、糖尿病の CHMP ガイダンス例のように規制文脈でも用いられる。
+        Fleming が治療中止を複合に含めることへの懐疑に対し、効果不十分による中止は患者にとって重要な情報であり、<strong>レスキュー・代替薬の使用を複合で明示</strong>する価値を擁護する。
+      </p>
+
+      <h3>4.5 単一の「科学的問い」への懐疑</h3>
+      <p>
+        規制当局・処方者・患者・支払者で優先が異なりうる。<strong>複数のエスティマンドの併存</strong>を統計的・臨床的に正当化する。非劣性でレスキューを治療方針に含めると、
+        問いは「ランダム化された薬剤」ではなく<strong>レスキューを含む戦略同士の非劣性</strong>になりうる、と注意喚起。
+      </p>
+    </section>
+
+    <section id="matrix">
+      <h2 class="section-title">5. 三者比較（論点マトリクス）</h2>
+      <div class="callout">
+        下表は原著の主張を要約したものです。実務ではプロトコル・規制当局との合意が優先されます。
+      </div>
+      <table class="compare" aria-label="Fleming, Morris, Keene の論点比較">
+        <thead>
+          <tr>
+            <th scope="col">論点</th>
+            <th scope="col">Fleming et al.</th>
+            <th scope="col">Morris et al.</th>
+            <th scope="col">Keene et al.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">主要解析のデフォルト</th>
+            <td>標準治療対照＋治療方針（死亡などは複合も）。仮想的・主層・治療中の主要解析は多くの場合問題。</td>
+            <td>治療方針が多くで適切だが<strong>一律ではない</strong>。因果方法で仮想的も厳密に扱いうる。</td>
+            <td>単一戦略独占を否定。<strong>文脈依存</strong>で最適戦略は変わる。</td>
+          </tr>
+          <tr>
+            <th scope="row">ランダム化の保全</th>
+            <td>治療方針的 ITT がランダム化後除外を避け、群間差を介入帰属可能にする、と主張。</td>
+            <td>ランダム化は識別を助けるが、戦略選択は問い次第。g-推定は全参加者を用い仮想的も ITT 原則に沿いうる、と注釈。</td>
+            <td>「全データ」を厳密に解すれば治療方針も ICE 情報を捨てうる。仮想的等も参加者全員を解析に含めうる。</td>
+          </tr>
+          <tr>
+            <th scope="row">仮想的戦略</th>
+            <td>反事実・強仮定・実世界関連が疑わしいことが多い。設計で ITT 可能な問いに寄せる。</td>
+            <td>Robins 系など<strong>発展的手法</strong>で仮定を緩和・明示可能。AIDS の歴史が示す有用性。</td>
+            <td>よく定義され動機づけられれば、<strong>介入単体の効力</strong>理解に有用。規制例も。</td>
+          </tr>
+          <tr>
+            <th scope="row">治療方針の推定</th>
+            <td>欠損予防最優先。欠損時は観測されうるアウトカムへの合理的帰属。</td>
+            <td> Fleming が軽視する難しさを指摘。欠損の定義はエスティマンド依存（Kenward）。</td>
+            <td>Bell et al.：記述は易しいが推定は難。強仮定か分散増・検出力低下のジレンマ。</td>
+          </tr>
+          <tr>
+            <th scope="row">複合と治療中止</th>
+            <td>死亡などは複合で臨床的重要性を反映。治療中止を複合に入れるのは臨床的意味を弱めうる。</td>
+            <td>複合は成分効果の分解が直ちに求められる「鈍い」問いになりうる、と副作用面。</td>
+            <td>中止・レスキューは効力評価に本質的。複合で明示的に扱う価値。</td>
+          </tr>
+          <tr>
+            <th scope="row">倫理・設計</th>
+            <td>LMIC での試験は分配的正義の条件付きで容認。オンロジー・クロスイン等の設計問題を批判。</td>
+            <td>LMIC 提案を搾取リスクと結びつけ強く反論。標準治療の曖昧さ・プラセボガイダンスも議論。</td>
+            <td>（本論点は Morris に近い文脈で設計・解釈の複雑さを補強）</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="interactive">
+      <h2 class="section-title">6. インタラクティブ：論点ビュー</h2>
+      <p>同じ内容を「共通土台」「対立軸」「実務チェック」の3視点で読み替えできます。タブを切り替えてください。</p>
+      <div class="view-tabs" role="tablist" aria-label="表示モード">
+        <button type="button" role="tab" aria-selected="true" aria-controls="panel-a" id="tab-a">共通土台</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="panel-b" id="tab-b">主な対立軸</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="panel-c" id="tab-c">試験計画チェック</button>
+      </div>
+      <div id="panel-a" class="panel active" role="tabpanel" aria-labelledby="tab-a">
+        <ul>
+          <li>ICH E9(R1) は<strong>問いを先に言語化</strong>し、解析がそのエスティマンドを推定しているかを透明にする枠組み。</li>
+          <li>併発事象は無視できず、<strong>デザイン・実施・解析・感度解析</strong>が一体で検討されるべき、という点は三者に近い。</li>
+          <li>「スロッピーな実装」（Morris 語）への不満は Fleming と批判側で共有されうる。</li>
+        </ul>
+      </div>
+      <div id="panel-b" class="panel" role="tabpanel" aria-labelledby="tab-b" hidden>
+        <ul>
+          <li><strong>一般規則 vs ケースバイケース</strong>：Fleming は主要解析の原則を強く提示、Morris・Keene は因果推論と多様な問いを擁護。</li>
+          <li><strong>識別の難しさの所在</strong>：Fleming は戦略自体の限界を強調、Morris は推定・識別手続きと混同しないよう主張。</li>
+          <li><strong>ITT＝どの因果効果か</strong>：Keene は割付効果と遵守下効果の区別を明確化。</li>
+          <li><strong>実世界関連</strong>：Fleming は無条件・レジメン全体、Keene は試験内の後続治療の異質性で治療方針の一般化にも限界。</li>
+        </ul>
+      </div>
+      <div id="panel-c" class="panel" role="tabpanel" aria-labelledby="tab-c" hidden>
+        <ol>
+          <li>主要エンドポイントは患者の feel/function/survive に直結するか（または妥当な代理か）。</li>
+          <li>対照は実臨床の意思決定に使える比較か（プラセボ＋レスキューか、積極対照か）。</li>
+          <li>ICE 発生後もデータ取得のプロトコルとインフォームド・コンセントは十分か。</li>
+          <li>選んだ戦略は Morris らの<strong>具体化可能性</strong>（将来の診療で効果が実現するか）を満たすか。</li>
+          <li>仮想的・主層を用いるなら、DAG・識別・感度解析・推定手続きをセットで記述できているか。</li>
+          <li>単一の主要解析だけでStakeholder 全員の問いを満たす仮定をしていないか—必要なら<strong>補助・探索</strong>のエスティマンドを併記。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="synthesis">
+      <h2 class="section-title">7. 総合整理</h2>
+      <p>
+        本論争の中心は、規制・公衆衛生に資する<strong>確証的試験の主要解析</strong>において、
+        併発事象を「観察されたレジメン全体の比較（治療方針）」で捉えるべきか、
+        それとも「反事実や遵守に紐づく因果量（仮想的・主層・治療中）」が主要または同等に正当か、という<strong>科学・倫理・伝達可能性のトレードオフ</strong>にある。
+      </p>
+      <div class="callout warn">
+        Fleming et al. は、Addendum 後に観察された<strong>安易な解析実装</strong>（事後サブグループ化に近い主層、情報的有意な打ち切り、実現しえない反事実）への警告として読むのが最も建設的である。
+        Morris・Keene は、その警告を「代替戦略の科学的正当性の否定」と読まないよう、<strong>方法論とエスティマンド記述の成熟</strong>を求めている。
+      </div>
+      <p>
+        実務的には、プロトコル段階で (i) 臨床・規制の<strong>主たる決定</strong>に直結する量（多くは治療方針または複合）と、
+        (ii) 効力・耐性・交絡経路の理解のための<strong>補助的因果量</strong>を切り分け、感度解析で両者の整合性を確認するハイブリッドが現場では一般的になりつつある。
+        本3論文は、そのハイブリッドを<strong>どこまで主要エンドポイントに持ち込むか</strong>について規範的に異なるストレスを与える文献群と言える。
+      </p>
+    </section>
+
+    <section id="refs" class="refs">
+      <h2 class="section-title">参考文献（原著）</h2>
+      <dl>
+        <dt>Fleming et al. (2025)</dt>
+        <dd>「A Perspective on the Appropriate Implementation of ICH E9(R1) Addendum Strategies for Handling Intercurrent Events」<br>
+          <em>Statistics in Medicine</em>, 44, e70104. <a href="https://doi.org/10.1002/sim.70104" target="_blank" rel="noopener">https://doi.org/10.1002/sim.70104</a></dd>
+        <dt>Morris et al. (2026)</dt>
+        <dd>「A Causal Perspective on “Appropriate Implementation of ICH E9(R1) Addendum Strategies” (Comment on Fleming et al.)」<br>
+          <em>Statistics in Medicine</em>, 45, e70455. <a href="https://doi.org/10.1002/sim.70455" target="_blank" rel="noopener">https://doi.org/10.1002/sim.70455</a></dd>
+        <dt>Keene et al. (2026)</dt>
+        <dd>「Commentary on Fleming et al. …」<br>
+          <em>Statistics in Medicine</em>, 45, e70453. <a href="https://doi.org/10.1002/sim.70453" target="_blank" rel="noopener">https://doi.org/10.1002/sim.70453</a></dd>
+      </dl>
+      <footer>
+        <p>本 HTML はアップロードされた PDF から抽出したテキストに基づく要約レポートです。引用・規制提出には原著を参照してください。生成日の目安：2026年3月。</p>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var storageKey = "estimand-report-theme";
+      var root = document.documentElement;
+      var btn = document.getElementById("themeBtn");
+
+      function applyTheme(t) {
+        if (t === "dark") {
+          root.setAttribute("data-theme", "dark");
+          btn.setAttribute("aria-pressed", "true");
+        } else {
+          root.removeAttribute("data-theme");
+          btn.setAttribute("aria-pressed", "false");
+        }
+        try { localStorage.setItem(storageKey, t); } catch (e) {}
+      }
+
+      try {
+        var saved = localStorage.getItem(storageKey);
+        if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          applyTheme("dark");
+        }
+      } catch (e) {}
+
+      btn.addEventListener("click", function () {
+        applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+      });
+
+      var tabs = document.querySelectorAll(".view-tabs [role='tab']");
+      var panels = {
+        "tab-a": document.getElementById("panel-a"),
+        "tab-b": document.getElementById("panel-b"),
+        "tab-c": document.getElementById("panel-c")
+      };
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          tabs.forEach(function (t) {
+            t.setAttribute("aria-selected", "false");
+          });
+          tab.setAttribute("aria-selected", "true");
+          Object.keys(panels).forEach(function (id) {
+            var p = panels[id];
+            var on = tab.id === id;
+            p.classList.toggle("active", on);
+            p.hidden = !on;
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
