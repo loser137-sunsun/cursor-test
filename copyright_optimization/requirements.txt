@@ -1,0 +1,4 @@
+numpy>=1.26
+scipy>=1.11
+scikit-optimize>=0.10
+matplotlib>=3.7
