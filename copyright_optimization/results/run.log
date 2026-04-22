@@ -1,0 +1,38 @@
+======================================================================
+Copyright Term Optimisation
+Base parameters:
+         r = 0.03
+     delta = 0.1
+   delta_i = 0.05
+      pi_0 = 1.0
+      s_pd = 1.4
+        L0 = 0.25
+     kappa = 0.005
+     N_max = 1.0
+    F_mean = 3.0
+
+--- 1. Grid search (ground truth) ---
+x* = 6.950 years  f(x*) = 10.51069
+
+--- 2. SciPy bounded scalar ---
+x* = 6.953 years  f(x*) = 10.51069  (iter=16)
+
+--- 3. Bayesian optimisation (GP-EI) ---
+x* = 6.902 years  f(x*) = 10.51054
+
+--- 4. Scenario comparison ---
+  Abolition (x=0)                 f=0.0000  R=0.000  I=17.500  C=0.000  N=0.000
+  Very short (5y)                 f=10.2166  R=3.677  I=11.731  C=0.944  N=0.706
+  Short / Pollock (15y)           f=9.0195  R=6.598  I=5.271  C=1.724  N=0.889
+  Moderate (25y)                  f=7.1266  R=7.394  I=2.368  C=1.974  N=0.915
+  Berne (life~50y, proxy)         f=5.3804  R=7.681  I=0.321  C=2.170  N=0.923
+  Current (70y post-mortem)       f=5.0610  R=7.691  I=0.065  C=2.273  N=0.923
+  Extreme (95y)                   f=4.8947  R=7.692  I=0.009  C=2.398  N=0.923
+  Perpetual (200y proxy)          f=4.4021  R=7.692  I=0.000  C=2.923  N=0.923
+
+--- 5. Monte-Carlo sensitivity (n=2000) ---
+  x* distribution: mean=8.81, median=7.10, std=8.50
+  5%-95% CI: [4.99, 14.05] years
+
+Wrote /workspace/copyright_optimization/results/summary.json
+Wrote figures to /workspace/copyright_optimization/figures
